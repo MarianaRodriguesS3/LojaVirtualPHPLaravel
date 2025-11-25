@@ -9,11 +9,12 @@ class Product extends Model
 {
     use HasFactory;
 
+    // Campos que podem ser preenchidos via mass assignment
     protected $fillable = [
         'name',
         'description',
         'price',
-        'image_url', // ou 'image_path', dependendo de como vai salvar a imagem
+        'image', // corresponde à coluna no banco
     ];
 
     /**
@@ -22,5 +23,18 @@ class Product extends Model
     public function cartItems()
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Accessor para 'image'.
+     * Retorna o valor da imagem do banco de dados ($value) ou uma placeholder se for NULL/vazio.
+     *
+     * @param string|null $value O valor original da coluna 'image' no banco de dados.
+     * @return string
+     */
+    public function getImageAttribute(?string $value): string
+    {
+        // VERIFICAÇÃO CORRETA: Usa $value (o dado do banco) para evitar recursão.
+        return $value ? $value : 'https://via.placeholder.com/300x200?text=Sem+imagem';
     }
 }
